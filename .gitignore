@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# PyCharm
+.idea/
+*.iml
+
+# Data and Models
+data/
+datasets/
+*.csv
+*.json
+*.pkl
+*.h5
+*.npy
+*.npz
+*.pt
+*.pth
+models/
+checkpoints/
+weights/
+
+# Logs and outputs
+logs/
+tensorboard/
+*.log
+wandb/
+
+# Jupyter
+.ipynb_checkpoints/
