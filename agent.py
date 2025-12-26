@@ -1,26 +1,23 @@
 import os
-
-import pygame
 import torch
 import random
 import numpy as np
+
 from collections import deque
-import pygame
-from numpy.ma.core import count
-
 from snake_env import SnakeEnv
-from modelVit import CNN_QNet, QTrainer
-from helperVit import plot
+from model import CNN_QNet, QTrainer
+from helper import plot
 
-MAX_MEMORY = 8096
-BATCH_SIZE = 64
+MAX_MEMORY = 32384
+BATCH_SIZE = 128
 # LR = 0.001
+# LR = 0.000002
 LR = 0.00002
-
+# LR = 0.00001
 class Agent:
     def __init__(self):
         self.n_games = 0
-        self.epsilon = 180  # 🚨 ИСПРАВЛЕНО: должно начинаться с 80 для exploration
+        self.epsilon = 1  # 🚨 ИСПРАВЛЕНО: должно начинаться с 80 для exploration
         self.gamma = 0.9
         self.memory = deque(maxlen=MAX_MEMORY)
 
@@ -69,10 +66,10 @@ class Agent:
         # логика epsilon-decay
         # epsilon уменьшается с 80 до 0 за 80 игр
         # count = self.n_games
-        self.epsilon = max(0, 0 - self.n_games)
+        # self.epsilon = max(0, 500 - self.n_games)
         # self.epsilon = max(0, 80 - (count / 10))
         final_move = [0, 0, 0, 0]  # 🚨 ИСПРАВЛЕНО: должно быть 4 действия!
-
+        self.epsilon = 0
         # Exploration
         if random.randint(0, 1300) < self.epsilon:  # 0-199 range
             move = random.randint(0, 3)  # 🚨 ИСПРАВЛЕНО: 0-3 (4 действия)
@@ -101,11 +98,11 @@ def train():
     agent = Agent()
     env = SnakeEnv(render_mode="human")  # 🟢 ИЗМЕНЕНО: было None, стало "human"
     # === ДОБАВЛЯЕМ ЗАГРУЗКУ ===
-    load_path = "/Users/artemhorkov/desktop/RL/snake/model/model_game_3000.pth"
+    load_path = "/Users/artemhorkov/desktop/RL/snake/model/model_game_20500.pth"
     if os.path.exists(load_path):
         print("🔄 Загружаю сохранённую модель...")
         agent.model.load_state_dict(torch.load(load_path))
-        agent.n_games = 3000  # восстановить номер игры
+        agent.n_games = 20500  # восстановить номер игры
         print("✅ Модель загружена, продолжаем обучение!")
 
     # Проверка формы состояния (опционально)
