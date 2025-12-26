@@ -11,32 +11,26 @@ class CNN_QNet(nn.Module):
         # свертки 3x3, stride=1, padding=1
         self.conv = nn.Sequential(
             # Первый слой: из 4 каналов в 32
-            nn.Conv2d(input_channels, 32, kernel_size=3, stride=1, padding=0),
+            nn.Conv2d(input_channels, 32, kernel_size=8, stride=4, padding=1),
             nn.ReLU(),
 
             # Второй слой: из 32 в 64
-            nn.Conv2d(32, 32, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=1),
             nn.ReLU(),
-
+            # nn.Dropout2d(0.05),
             # Третий слой: из 64 в 64
-            nn.Conv2d(32, 32, kernel_size=3, stride=1, padding=1),
-            nn.ReLU()
-
+            nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            # nn.Dropout2d(0.05)
         )
-
-        # РАССЧЕТ РАЗМЕРОВ ПОСЛЕ СВЕРТОК:
-        # Начало: 84x84
-        # После MaxPool2d(2,2): 42x42
-        # После MaxPool2d(2,2): 21x21
-        # Выход conv слоя: 128 каналов × 21 × 21 = 128 × 441 = 56448
-
         self.fc = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(32 * 82 * 82, 128),
+            nn.Linear(64 * 10 * 10, 512),
             nn.ReLU(),
             nn.Dropout(0.2),
-            nn.Linear(128, num_actions)
+            nn.Linear(512, num_actions)
         )
+
 
     def forward(self, x):
         x = self.conv(x)
@@ -45,15 +39,15 @@ class CNN_QNet(nn.Module):
     def save(self, file_name):
         torch.save(self.model.state_dict(), file_name)
 
-    def load(self, file_name):
-        if os.path.exists(file_name):
-            self.load_state_dict(torch.load(file_name, map_location=torch.device('cpu')))
-            self.eval()  # переводим в режим оценки
-            print(f"✅ Модель загружена из {file_name}")
-            return True
-        else:
-            print(f"⚠️ Файл {file_name} не найден, начинаем с нуля")
-            return False
+    # def load(self, file_name):
+    #     if os.path.exists(file_name):
+    #         self.load_state_dict(torch.load(file_name, map_location=torch.device('cpu')))
+    #         self.eval()  # переводим в режим оценки
+    #         print(f"✅ Модель загружена из {file_name}")
+    #         return True
+    #     else:
+    #         print(f"⚠️ Файл {file_name} не найден, начинаем с нуля")
+    #         return False
 
 class QTrainer:
     def __init__(self, model, lr, gamma):
