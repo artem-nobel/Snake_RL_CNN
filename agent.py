@@ -144,7 +144,7 @@ def train():
                 print("🚀 Начинаем с нуля")
                 LOAD_MODEL = False
             else:
-                # Извлекаем номер игры из имени файла
+                # Извлекаем номер игры из имени
                 try:
                     game_num = int(model_to_load.split("_")[2].split(".")[0])
                 except:
