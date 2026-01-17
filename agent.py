@@ -220,7 +220,7 @@ def train():
             print(f'Game {agent.n_games}, Score {score}, Record: {record}, '
                   f'Epsilon: {agent.epsilon}, Learn steps: {agent.learn_step_counter}')
 
-            # === Сохраняем каждые 5 игр ===
+            # Сохраняем каждые 5 игр
             if agent.n_games % 500 == 0:
                 # Сохраняем модель
                 model_name = f"model_dueling_{agent.n_games}.pth"
