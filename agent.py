@@ -184,7 +184,7 @@ def train():
     test_state = agent.get_state(env)
     print(f"✅ State shape: {test_state.shape}")
     print(f"✅ State range: [{test_state.min():.3f}, {test_state.max():.3f}]")
-    # === DUELING: Обновляем сообщение о типе сети ===
+    # сообщение о типе сети
     print(f"🎯 Начинаем обучение с DUELING DDQN (Dueling Double Deep Q-Network)")
     print(f"🔧 Параметры: LR={LR}, Gamma={agent.gamma}, Tau={agent.trainer.tau}")
     print(f"🏗️  Архитектура: Dueling CNN (Value + Advantage streams)")
