@@ -107,13 +107,13 @@ class SnakeTester:
 
 def main():
     # Путь к сохранённой модели
-    MODEL_PATH = "/Users/artemhorkov/desktop/RL/snake/model/model_game_20500.pth"
+    MODEL_PATH = "/Users/artemhorkov/desktop/RL/snake/model/model_game_51000.pth"
 
     # Создаём тестер
     tester = SnakeTester(MODEL_PATH)
 
     # Запускаем тестирование
-    tester.test(num_games=50, max_steps=2000)
+    tester.test(num_games=150, max_steps=10000)
 
 
 if __name__ == "__main__":

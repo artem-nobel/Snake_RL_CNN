@@ -2,7 +2,7 @@ import pygame
 import numpy as np
 import random
 from collections import deque
-import cv2  # 🆕 OpenCV
+import cv2
 
 
 class SnakeEnv:
@@ -20,7 +20,7 @@ class SnakeEnv:
         self.BASE_APPLE_REWARD = 10
         # self.APPLE_REWARD_MULTIPLIER = 1
         # self.EMPTY_STEP_PENALTY = -0.00
-        self.DEATH_PENALTY = -100
+        self.DEATH_PENALTY = -10
 
         self.render_mode = render_mode
         self.display_screen = None
@@ -75,11 +75,10 @@ class SnakeEnv:
     #         if food not in self.snake:
     #             return food
     def _spawn_food(self):
-        """
-        Генерация яблока с равномерным распределением по полю.
-        Все клетки используются по очереди, что предотвращает кластеризацию.
-        """
-        # Создаем все возможные позиции яблок (если еще не созданы)
+
+        # Генерация яблока с равномерным распределением по полю.
+
+        # Создаем все возможные позиции яблок
         if not hasattr(self, 'all_food_positions'):
             self.food_min_x = 2
             self.food_max_x = self.grid_width - 3
@@ -124,20 +123,20 @@ class SnakeEnv:
     #
     #     return 0.1 if new_dist < old_dist else -0.1
 
-    # def _calculate_directional_reward(self, old_x, old_y, new_x, new_y):
-    #     """Вычисляет награду за движение к/от еды"""
-    #     food_x, food_y = self.food
+    def _calculate_directional_reward(self, old_x, old_y, new_x, new_y):
+        # Вычисляет награду за движение к/от еды
+        food_x, food_y = self.food
 
-        # # Манхэттенское расстояние (L1 норма)
-        # old_distance = abs(old_x - food_x) + abs(old_y - food_y)
-        # new_distance = abs(new_x - food_x) + abs(new_y - food_y)
-        #
-        # if new_distance < old_distance:
-        #     return 0.0  # 🟢 Награда за движение К еде
-        # elif new_distance > old_distance:
-        #     return -0.0  # 🔴 Штраф за движение ОТ еды
-        # else:
-        #     return 0.0  # 🤷 Без изменений (движение параллельно)
+        # Манхэттенское расстояние (L1 норма)
+        old_distance = abs(old_x - food_x) + abs(old_y - food_y)
+        new_distance = abs(new_x - food_x) + abs(new_y - food_y)
+
+        if new_distance < old_distance:
+            return 0.0  # 🟢 Награда за движение К еде
+        elif new_distance > old_distance:
+            return 0.0  # 🔴 Штраф за движение ОТ еды
+        else:
+            return 0.0  # 🤷 Без изменений (движение параллельно)
 
     def step(self, action):
         self.ate_apple_this_step = False
@@ -150,10 +149,10 @@ class SnakeEnv:
         new_head_y = head_y + self.direction[1]
         new_head = (new_head_x, new_head_y)
 
-        # directional_reward = self._calculate_directional_reward(head_x, head_y, new_head_x, new_head_y)
+        directional_reward = self._calculate_directional_reward(head_x, head_y, new_head_x, new_head_y)
 
-        # reward = directional_reward
-        reward = 0
+        reward = directional_reward
+        # reward = 0
         # self.score += directional_reward
         # reward = self.EMPTY_STEP_PENALTY
         self.game_over = False
@@ -243,24 +242,19 @@ class SnakeEnv:
             pygame.time.delay(50)
 
     def _preprocess_frame_cv(self, frame):
-        """Grayscale + resize через OpenCV (быстро и стабильно)"""
-        # 🚨 ИСПРАВЛЕНО: frame уже в формате (C, H, W), нужно переставить оси
+
         # Конвертируем из (C, H, W) в (H, W, C) для OpenCV
         if frame.shape[0] == 3:  # Если каналы первыми
             frame = np.transpose(frame, (1, 2, 0))
 
-        # 1. Конвертация RGB → grayscale
+
         img_gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 
-        # 2. Resize до 84×84
         img_resized = cv2.resize(img_gray, (84, 84), interpolation=cv2.INTER_AREA)
 
-        # 3. Нормализация
         img_norm = img_resized.astype(np.float32) / 255.0
 
         return img_norm
-    # =====================================================================
-    # Замена _get_processed_frame на OpenCV
     # =====================================================================
     def _get_processed_frame(self):
         frame_surface = self.render()
@@ -274,7 +268,7 @@ class SnakeEnv:
     # def _get_observation(self):
     #     return np.stack(self.frames, axis=0)
     def _get_observation(self):
-        """Возвращает стек обработанных кадров [4, 84, 84]"""
+        # Возвращает стек кадров [4, 84, 84]
 
         return np.stack(self.frames, axis=0)
 
